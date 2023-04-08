@@ -9,6 +9,9 @@ Children with a higher rating get more candies than their neighbors.
 
 Return the minimum number of candies you need to have to distribute the candies to the children.
 
+1 2 3 1 0
+1 2 4 2 1
+
 Example 1:
 Input: ratings = [1,0,2]
 Output: 5
@@ -26,20 +29,18 @@ LeetCode link: https://leetcode.com/problems/candy/
 
 #region Solution
 
-Console.WriteLine(Candy(new int[] { 1, 6, 10, 8, 7, 3, 2 }));
+Console.WriteLine(Candy(new int[] { 1, 2, 3, 1, 0 }));
 static int Candy(int[] ratings)
 {
     var result = 1;
     var minIndex = Array.IndexOf(ratings, ratings.Min());
 
-    var depth = 0;
     var minIndexCopy = minIndex;
     var currentValue = 1;
     while (minIndexCopy > 0)
     {
         if (ratings[minIndexCopy - 1] > ratings[minIndexCopy])
         {
-            depth++;
             currentValue++;
         }
         else if (ratings[minIndexCopy - 1] == ratings[minIndexCopy])
@@ -51,21 +52,24 @@ static int Candy(int[] ratings)
         {
             if (currentValue == 1)
             {
+                var tmpResult = 0;
                 var tmpIndex = minIndexCopy - 1;
-                var tmpDepth = depth;
                 while (ratings[tmpIndex + 1] > ratings[tmpIndex] && tmpIndex != minIndex)
                 {
-                    if (tmpDepth < 0)
-                    {
-                        tmpDepth++;
-                        result++;
-                    }
-
+                    tmpResult++;
                     tmpIndex++;
                 }
+
+                var depth = 0;
+                while (tmpIndex < ratings.Length - 1 && ratings[tmpIndex + 1] <= ratings[tmpIndex] && tmpIndex != minIndex)
+                {
+                    depth++;
+                    tmpIndex++;
+                }
+
+                result += tmpResult - (depth >= tmpResult ? depth - tmpResult : 0);
             }
 
-            depth--;
             currentValue = 1;
         }
 
@@ -73,14 +77,12 @@ static int Candy(int[] ratings)
         minIndexCopy--;
     }
 
-    depth = 0;
     minIndexCopy = minIndex;
     currentValue = 1;
     while (minIndexCopy < ratings.Length - 1)
     {
         if (ratings[minIndexCopy + 1] > ratings[minIndexCopy])
         {
-            depth++;
             currentValue++;
         }
         else if (ratings[minIndexCopy + 1] == ratings[minIndexCopy])
@@ -92,22 +94,24 @@ static int Candy(int[] ratings)
         {
             if (currentValue == 1)
             {
+                var tmpResult = 0;
                 var tmpIndex = minIndexCopy + 1;
-                var tmpDepth = depth;
                 while (ratings[tmpIndex - 1] > ratings[tmpIndex] && tmpIndex != minIndex)
                 {
-                    if (tmpDepth < 0)
-                    {
-                        tmpDepth++;
-                        result++;
-                    }
-
+                    tmpResult++;
                     tmpIndex--;
                 }
-            }
 
-            if (depth > 0)
-                depth--;
+                var depth = 0;
+                while (tmpIndex > 0 && ratings[tmpIndex - 1] <= ratings[tmpIndex] && tmpIndex != minIndex)
+                {
+                    depth++;
+                    tmpIndex--;
+                }
+
+                result += tmpResult - (depth >= tmpResult ? depth - tmpResult : 0);
+
+            }
 
             currentValue = 1;
         }
