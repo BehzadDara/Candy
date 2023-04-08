@@ -9,9 +9,6 @@ Children with a higher rating get more candies than their neighbors.
 
 Return the minimum number of candies you need to have to distribute the candies to the children.
 
-1 2 5 5 5 2 1
-1 2 3 1 3 2 1
-
 Example 1:
 Input: ratings = [1,0,2]
 Output: 5
@@ -29,7 +26,7 @@ LeetCode link: https://leetcode.com/problems/candy/
 
 #region Solution
 
-Console.WriteLine(Candy(new int[] { 1, 2, 87, 87, 87, 2, 1 }));
+Console.WriteLine(Candy(new int[] { 1, 6, 10, 8, 7, 3, 2 }));
 static int Candy(int[] ratings)
 {
     var result = 1;
@@ -47,8 +44,8 @@ static int Candy(int[] ratings)
         }
         else if (ratings[minIndexCopy - 1] == ratings[minIndexCopy])
         {
-            depth = 0;
-            currentValue = 1;
+            currentValue = Candy(ratings[0..(minIndexCopy)]);
+            minIndexCopy = 1;
         }
         else
         {
@@ -58,9 +55,9 @@ static int Candy(int[] ratings)
                 var tmpDepth = depth;
                 while (ratings[tmpIndex + 1] > ratings[tmpIndex] && tmpIndex != minIndex)
                 {
-                    if (tmpDepth >= 0)
+                    if (tmpDepth < 0)
                     {
-                        tmpDepth--;
+                        tmpDepth++;
                         result++;
                     }
 
@@ -88,8 +85,8 @@ static int Candy(int[] ratings)
         }
         else if (ratings[minIndexCopy + 1] == ratings[minIndexCopy])
         {
-            depth = 0;
-            currentValue = 1;
+            currentValue = Candy(ratings[(minIndexCopy + 1)..(ratings.Length)]);
+            minIndexCopy = ratings.Length - 2;
         }
         else
         {
@@ -99,9 +96,9 @@ static int Candy(int[] ratings)
                 var tmpDepth = depth;
                 while (ratings[tmpIndex - 1] > ratings[tmpIndex] && tmpIndex != minIndex)
                 {
-                    if (tmpDepth >= 0)
+                    if (tmpDepth < 0)
                     {
-                        tmpDepth--;
+                        tmpDepth++;
                         result++;
                     }
 
