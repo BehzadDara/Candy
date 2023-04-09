@@ -9,9 +9,6 @@ Children with a higher rating get more candies than their neighbors.
 
 Return the minimum number of candies you need to have to distribute the candies to the children.
 
-1 2 3 1 0
-1 2 4 2 1
-
 Example 1:
 Input: ratings = [1,0,2]
 Output: 5
@@ -29,98 +26,40 @@ LeetCode link: https://leetcode.com/problems/candy/
 
 #region Solution
 
-Console.WriteLine(Candy(new int[] { 1, 2, 3, 1, 0 }));
+Console.WriteLine(Candy(new int[] { 1, 0, 2 }));
 static int Candy(int[] ratings)
 {
-    var result = 1;
-    var minIndex = Array.IndexOf(ratings, ratings.Min());
+    var result = new int[ratings.Length];
+    var value = 1;
 
-    var minIndexCopy = minIndex;
-    var currentValue = 1;
-    while (minIndexCopy > 0)
+    for (int i = 0; i < ratings.Length - 1; i++)
     {
-        if (ratings[minIndexCopy - 1] > ratings[minIndexCopy])
+        result[i] = value;
+        if (ratings[i] < ratings[i + 1])
         {
-            currentValue++;
+            value++;
         }
-        else if (ratings[minIndexCopy - 1] == ratings[minIndexCopy])
+        else if (ratings[i] == ratings[i + 1])
         {
-            currentValue = Candy(ratings[0..(minIndexCopy)]);
-            minIndexCopy = 1;
+            value = 1;
         }
         else
         {
-            if (currentValue == 1)
+            value = 1;
+
+            var j = i;
+            var tmpValue = 1;
+            while (j >= 0 && ratings[j] > ratings[j + 1] && result[j] == tmpValue)
             {
-                var tmpResult = 0;
-                var tmpIndex = minIndexCopy - 1;
-                while (ratings[tmpIndex + 1] > ratings[tmpIndex] && tmpIndex != minIndex)
-                {
-                    tmpResult++;
-                    tmpIndex++;
-                }
-
-                var depth = 0;
-                while (tmpIndex < ratings.Length - 1 && ratings[tmpIndex + 1] <= ratings[tmpIndex] && tmpIndex != minIndex)
-                {
-                    depth++;
-                    tmpIndex++;
-                }
-
-                result += tmpResult - (depth >= tmpResult ? depth - tmpResult : 0);
+                result[j]++;
+                tmpValue++;
+                j--;
             }
-
-            currentValue = 1;
         }
-
-        result += currentValue;
-        minIndexCopy--;
     }
+    result[ratings.Length - 1] = value;
 
-    minIndexCopy = minIndex;
-    currentValue = 1;
-    while (minIndexCopy < ratings.Length - 1)
-    {
-        if (ratings[minIndexCopy + 1] > ratings[minIndexCopy])
-        {
-            currentValue++;
-        }
-        else if (ratings[minIndexCopy + 1] == ratings[minIndexCopy])
-        {
-            currentValue = Candy(ratings[(minIndexCopy + 1)..(ratings.Length)]);
-            minIndexCopy = ratings.Length - 2;
-        }
-        else
-        {
-            if (currentValue == 1)
-            {
-                var tmpResult = 0;
-                var tmpIndex = minIndexCopy + 1;
-                while (ratings[tmpIndex - 1] > ratings[tmpIndex] && tmpIndex != minIndex)
-                {
-                    tmpResult++;
-                    tmpIndex--;
-                }
-
-                var depth = 0;
-                while (tmpIndex > 0 && ratings[tmpIndex - 1] <= ratings[tmpIndex] && tmpIndex != minIndex)
-                {
-                    depth++;
-                    tmpIndex--;
-                }
-
-                result += tmpResult - (depth >= tmpResult ? depth - tmpResult : 0);
-
-            }
-
-            currentValue = 1;
-        }
-
-        result += currentValue;
-        minIndexCopy++;
-    }
-
-    return result;
+    return result.Sum();
 }
 
 #endregion
